@@ -71,7 +71,9 @@
 			"Bash(npx biome:*)",
 			"Bash(npx tsc:*)",
 
-			"Bash(biome check:*)"
+			"Bash(biome check:*)",
+
+			"Bash(chmod +x .githooks/pre-commit)"
 		],
 		"ask": [
 			"Bash(rm:*)",
@@ -85,7 +87,6 @@
 			"Bash(rmdir:*)",
 			"Bash(sudo:*)",
 			"Bash(su:*)",
-			"Bash(chmod:*)",
 			"Bash(chown:*)",
 			"Bash(dd:*)",
 			"Bash(mkfs:*)",

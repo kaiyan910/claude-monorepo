@@ -6,6 +6,7 @@
 		"apps/*"
 	],
 	"scripts": {
+		"prepare": "git config core.hooksPath .githooks || true",
 		"dev": "concurrently -n api,web -c blue,green \"npm:dev:api\" \"npm:dev:frontend\"",
 		"dev:api": "npm run start:dev -w @claude-monorepo/api",
 		"dev:frontend": "npm run dev -w @claude-monorepo/frontend",

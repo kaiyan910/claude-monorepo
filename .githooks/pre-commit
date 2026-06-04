@@ -1,0 +1,21 @@
+#!/usr/bin/env sh
+# Auto-format staged files with Biome before each commit, then re-stage them.
+# Complements the Claude PostToolUse hook so hand-written changes get formatted too.
+#
+# Enabled via `git config core.hooksPath .githooks` (run automatically by the
+# root package.json "prepare" script on npm install).
+
+# Staged files: Added / Copied / Modified / Renamed. Deletions are skipped.
+staged=$(git diff --cached --name-only --diff-filter=ACMR)
+[ -z "$staged" ] && exit 0
+
+# Format only the staged paths (NUL-separated to survive spaces in names).
+# Biome silently skips file types it doesn't handle (--files-ignore-unknown)
+# and does not error when nothing matches (--no-errors-on-unmatched).
+printf '%s\n' "$staged" | tr '\n' '\0' \
+	| xargs -0 npx biome format --write --files-ignore-unknown=true --no-errors-on-unmatched
+
+# Re-stage whatever Biome reformatted so the fixes land in this commit.
+printf '%s\n' "$staged" | tr '\n' '\0' | xargs -0 git add --
+
+exit 0
