@@ -67,11 +67,27 @@ claude-monorepo/
 - Each app extends it while keeping its framework-specific settings, so the
   app builds are unaffected.
 
+## Linting & formatting (added 2026-06-04)
+
+- Both ESLint and Prettier were replaced by **Biome** across both apps.
+- A single root `biome.json` configures the whole monorepo: tab indent,
+  double quotes, `recommended` lint rules, import organization, and
+  `unsafeParameterDecoratorsEnabled` for NestJS decorators. It respects
+  `.gitignore` (so `node_modules`/`dist` are skipped) and excludes
+  `package-lock.json`.
+- `@biomejs/biome` is installed once at the root; per-app `lint`/`format`
+  scripts call the hoisted binary scoped to their `src`/`test` dirs.
+- Root scripts: `lint` (`biome lint`), `format` (`biome format --write`),
+  `check` (`biome check`).
+- All scaffold files were reformatted to Biome's style, and the Vite
+  `main.tsx` non-null assertion was replaced with an explicit guard to
+  satisfy `lint/style/noNonNullAssertion`.
+
 ## Explicitly out of scope
 
 - No `packages/shared` package.
-- No shared sample endpoint / no changes to default scaffolds.
-- No root ESLint / Prettier / EditorConfig.
+- No shared sample endpoint / no changes to default scaffolds (beyond the
+  Biome reformat + the `main.tsx` guard noted above).
 - No Vite → API dev proxy.
 
 ## Verification
