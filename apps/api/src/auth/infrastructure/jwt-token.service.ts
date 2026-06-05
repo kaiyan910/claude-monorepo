@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
+import type { StringValue } from "ms";
 import type {
 	AccessTokenPayload,
 	RefreshTokenPayload,
@@ -34,7 +35,7 @@ export class JwtTokenService implements TokenService {
 			{ ...payload, type: "access" },
 			{
 				secret: this.config.get<string>("ACCESS_TOKEN_SECRET"),
-				expiresIn: this.config.get<string>("ACCESS_TOKEN_TTL"),
+				expiresIn: this.requireConfig("ACCESS_TOKEN_TTL") as StringValue,
 			},
 		);
 	}
@@ -44,9 +45,18 @@ export class JwtTokenService implements TokenService {
 			{ ...payload, type: "refresh" },
 			{
 				secret: this.config.get<string>("REFRESH_TOKEN_SECRET"),
-				expiresIn: this.config.get<string>("REFRESH_TOKEN_TTL"),
+				expiresIn: this.requireConfig("REFRESH_TOKEN_TTL") as StringValue,
 			},
 		);
+	}
+
+	/** Reads a required config value, throwing if absent. */
+	private requireConfig(key: string): string {
+		const value = this.config.get<string>(key);
+		if (!value) {
+			throw new Error(`Missing required config: ${key}`);
+		}
+		return value;
 	}
 
 	async verifyAccess(token: string): Promise<AccessTokenPayload> {
