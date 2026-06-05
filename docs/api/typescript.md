@@ -1,0 +1,3 @@
+- No `any` — use `unknown` if uncertain.
+- Prefer utility types (`Partial`, `Pick`, `Omit`) over duplicating fields.
+- Readability over cleverness.

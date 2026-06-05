@@ -1,0 +1,5 @@
+- **Jest** as test runner. Co-locate test files with source using `.spec.ts` suffix.
+- Arrange → Act → Assert. One behavior per `it()`. Descriptive test names.
+- Mock at the boundary (Prisma, Redis, HTTP clients), not internal logic.
+- E2E tests in `test/*.e2e-spec.ts` using `supertest` against a dedicated test database.
+- Cover both success and error paths.

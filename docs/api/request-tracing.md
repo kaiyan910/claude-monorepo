@@ -1,0 +1,3 @@
+- `RequestIdMiddleware` generates a UUID and attaches it to `req["requestId"]`.
+- Reuse the same ID throughout the entire request lifecycle (logging, errors, downstream calls).
+- `CustomExceptionFilter` maps `requestId` → `traceId` in error responses.

@@ -1,0 +1,5 @@
+- **Structured JSON logging** (Pino or Winston) — never plain `console.log()`.
+- Always include `requestId` in every log entry.
+- Strategy pattern via `LOG_TRANSPORT` env var (`console | file | remote`).
+- Use appropriate levels: `debug` (dev), `info` (key ops), `warn` (recoverable), `error` (failures).
+- Never log passwords, tokens, or PII.

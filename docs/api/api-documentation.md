@@ -1,0 +1,4 @@
+- **`@nestjs/swagger`** for OpenAPI spec generation. **Scalar** as API reference UI.
+- Decorate controllers with `@ApiTags()`, `@ApiOperation()`, `@ApiResponse()`.
+- Decorate all DTO fields with `@ApiProperty()` including `example` and `enum` values.
+- Keep decorators in sync with implementation. Document all applicable error `code` values per endpoint.
