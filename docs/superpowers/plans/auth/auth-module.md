@@ -1651,12 +1651,15 @@ export class AuthService {
     if (!user) {
       throw new InvalidCredentialsError();
     }
-    if (!user.enabled) {
-      throw new UserDisabledError();
-    }
+    // Verify the password BEFORE checking `enabled` so a wrong password always
+    // returns InvalidCredentialsError — only a caller with the correct password
+    // can ever learn an account is disabled (enumeration-resistant).
     const passwordMatches = await this.hasher.compare(password, user.passwordHash);
     if (!passwordMatches) {
       throw new InvalidCredentialsError();
+    }
+    if (!user.enabled) {
+      throw new UserDisabledError();
     }
     return this.issueTokens(user);
   }
