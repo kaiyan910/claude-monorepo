@@ -189,10 +189,14 @@ git commit -m "chore(api): add auth dependencies, db scripts, and @/ path alias"
 
 **Files:**
 - Create: `apps/api/prisma/schema.prisma`
+- Create: `apps/api/prisma.config.ts`
+- Modify: `apps/api/package.json` (install `dotenv`; remove the now-obsolete top-level `prisma` key — see Prisma 7 note)
+
+> **Prisma 7 note (important):** In Prisma 7 the connection URL is **removed from `schema.prisma`** and configured in `prisma.config.ts` instead. The `package.json` `"prisma": { "seed" }` key is deprecated in favour of `prisma.config.ts` `migrations.seed`. The Prisma CLI does not auto-load `.env`, so `prisma.config.ts` and the seed script must `import "dotenv/config"` (requires the `dotenv` dev dependency). We keep `generator client { provider = "prisma-client-js" }`, which still emits to `node_modules/@prisma/client`, so app code imports `{ PrismaClient } from "@prisma/client"` (matches `docs/api/database.md`).
 
 - [ ] **Step 1: Write the schema**
 
-Create `apps/api/prisma/schema.prisma`:
+Create `apps/api/prisma/schema.prisma` (no `url` in the datasource — Prisma 7):
 
 ```prisma
 generator client {
@@ -201,7 +205,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -219,7 +222,31 @@ model User {
 }
 ```
 
-> Note: `@prisma/adapter-pg` is wired in `DatabaseService` (Task 4), not in the schema. Driver adapters are GA in Prisma 7, so no `previewFeatures` flag is required. If `prisma generate` reports the adapter needs a preview flag (older CLI), add `previewFeatures = ["driverAdapters"]` to the `generator client` block.
+- [ ] **Step 1b: Install `dotenv` and create `prisma.config.ts`**
+
+Run (from repo root): `npm install -w @claude-monorepo/api -D dotenv`
+
+Create `apps/api/prisma.config.ts`:
+
+```ts
+import "dotenv/config";
+import { defineConfig, env } from "prisma/config";
+
+export default defineConfig({
+  schema: "prisma/schema.prisma",
+  migrations: {
+    path: "prisma/migrations",
+    seed: "ts-node prisma/seed.ts",
+  },
+  datasource: {
+    url: env("DATABASE_URL"),
+  },
+});
+```
+
+Then remove the now-obsolete top-level `"prisma": { "seed": ... }` key from `apps/api/package.json` (superseded by `prisma.config.ts`). Keep the `db:generate` / `db:migration` / `db:seed` scripts.
+
+> `@prisma/adapter-pg` is wired in `DatabaseService` (Task 4), not in the schema.
 
 - [ ] **Step 2: Generate the client**
 
@@ -236,8 +263,8 @@ Expected: a migration is created under `apps/api/prisma/migrations/` and applied
 - [ ] **Step 4: Commit**
 
 ```bash
-git add apps/api/prisma/schema.prisma apps/api/prisma/migrations
-git commit -m "feat(api): add Prisma User schema and initial migration"
+git add apps/api/prisma/schema.prisma apps/api/prisma.config.ts apps/api/package.json apps/api/prisma/migrations package-lock.json
+git commit -m "feat(api): add Prisma User schema and Prisma 7 config"
 ```
 
 ---
@@ -377,7 +404,9 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
   private readonly client: PrismaClient;
 
   constructor() {
-    const adapter = new PrismaPg(process.env.DATABASE_URL ?? "");
+    // Prisma 7: PrismaPg takes a config object with `connectionString`.
+    // (docs/api/database.md shows the older string-arg form; v7 uses the object form.)
+    const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL ?? "" });
     this.client = new PrismaClient({ adapter });
   }
 
@@ -2121,9 +2150,10 @@ git commit -m "feat(api): wire auth module, global validation, filter, and traci
 
 - [ ] **Step 1: Implement the seed**
 
-Create `apps/api/prisma/seed.ts` (a standalone script — uses `bcrypt` and Prisma directly):
+Create `apps/api/prisma/seed.ts` (a standalone script — uses `bcrypt` and Prisma directly). It runs outside Nest, so it loads `.env` via `dotenv/config`:
 
 ```ts
+import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
 import * as bcrypt from "bcrypt";
@@ -2138,7 +2168,7 @@ function requireEnv(key: string): string {
 }
 
 async function main(): Promise<void> {
-  const adapter = new PrismaPg(process.env.DATABASE_URL ?? "");
+  const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL ?? "" });
   const prisma = new PrismaClient({ adapter });
 
   const username = requireEnv("SEED_ROOT_USERNAME");
