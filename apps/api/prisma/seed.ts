@@ -14,7 +14,7 @@ function requireEnv(key: string): string {
 
 async function main(): Promise<void> {
 	const adapter = new PrismaPg({
-		connectionString: process.env.DATABASE_URL ?? "",
+		connectionString: requireEnv("DATABASE_URL"),
 	});
 	const prisma = new PrismaClient({ adapter });
 
