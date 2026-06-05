@@ -460,6 +460,7 @@ git commit -m "feat(api): add core DatabaseService with @prisma/adapter-pg"
 ## Task 5: Custom error classes
 
 **Files:**
+- Create: `apps/api/src/common/errors/app.exception.ts` — shared `AppException { readonly code: string }` interface (implemented by every custom error; consumed by `CustomExceptionFilter` in Task 7)
 - Create: `apps/api/src/common/errors/invalid-credentials.error.ts`
 - Create: `apps/api/src/common/errors/user-disabled.error.ts`
 - Create: `apps/api/src/common/errors/invalid-token.error.ts`
@@ -765,6 +766,7 @@ import {
   HttpStatus,
 } from "@nestjs/common";
 import type { Request, Response } from "express";
+import type { AppException } from "@/common/errors/app.exception";
 
 /** Maps common HTTP statuses to a default error code for non-custom exceptions. */
 const STATUS_CODE_MAP: Record<number, string> = {
@@ -775,11 +777,7 @@ const STATUS_CODE_MAP: Record<number, string> = {
   [HttpStatus.METHOD_NOT_ALLOWED]: "METHOD_NOT_ALLOWED",
 };
 
-interface ErrorWithCode {
-  code: string;
-}
-
-function hasCode(value: unknown): value is ErrorWithCode {
+function hasCode(value: unknown): value is AppException {
   return (
     typeof value === "object" &&
     value !== null &&
