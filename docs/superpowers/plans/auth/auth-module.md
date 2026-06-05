@@ -2216,7 +2216,7 @@ git commit -m "feat(api): add idempotent root-user seed script"
 **Files:**
 - Create: `apps/api/test/auth.e2e-spec.ts`
 
-The e2e exercises the real controller, guard, validation pipe, exception filter, and token service together. To keep the suite hermetic (no Postgres required in CI), it overrides `USER_REPOSITORY` and `PASSWORD_HASHER` with in-memory fakes and provides real JWT secrets via env. A DB-backed e2e against a dedicated test database is a follow-up task.
+The e2e exercises the real controller, guard, validation pipe, exception filter, and token service together. To keep the suite hermetic (no Postgres required in CI), it overrides `USER_REPOSITORY` and `PASSWORD_HASHER` with in-memory fakes, overrides `DatabaseService` with a no-op stub (so `onModuleInit` doesn't try to `$connect` to a real Postgres), and provides real JWT secrets via env. A DB-backed e2e against a dedicated test database is a follow-up task.
 
 - [ ] **Step 1: Write the e2e test**
 
@@ -2230,8 +2230,16 @@ import request from "supertest";
 import { AppModule } from "@/app.module";
 import { PASSWORD_HASHER, type PasswordHasher } from "@/auth/application/password-hasher";
 import { CustomExceptionFilter } from "@/common/filters/custom-exception.filter";
+import { DatabaseService } from "@/core/database/database.service";
 import { USER_REPOSITORY, type UserRepository } from "@/user/application/user.repository";
 import { User } from "@/user/domain/user.vo";
+
+// no-op DatabaseService so app.init() never opens a real Postgres connection
+const fakeDatabaseService = {
+  getClient: () => ({}),
+  onModuleInit: async () => {},
+  onModuleDestroy: async () => {},
+};
 
 const ENABLED_USER = new User({
   id: "u1",
@@ -2269,6 +2277,8 @@ describe("Auth (e2e)", () => {
       .useValue(fakeRepo)
       .overrideProvider(PASSWORD_HASHER)
       .useValue(fakeHasher)
+      .overrideProvider(DatabaseService)
+      .useValue(fakeDatabaseService)
       .compile();
 
     app = moduleRef.createNestApplication();
