@@ -40,13 +40,13 @@ src/
 
 ## Best Practices
 
-- `Database`: [@docs/best-practices/database.md](./docs/best-practices/database.md)
-- `Conventions`: [@docs/best-practices/conventions.md](./docs/best-practices/conventions.md)
-- `Typescript`: [@docs/best-practices/typescript.md](./docs/best-practices/typescript.md)
-- `Validation`: [@docs/best-practices/validation.md](./docs/best-practices/validation.md)
-- `Request Tracing`: [@docs/best-practices/request-tracing.md](./docs/best-practices/request-tracing.md)
-- `Error Handling`: [@docs/best-practices/error-handling.md](./docs/best-practices/error-handling.md)
-- `Testing`: [@docs/best-practices/testing.md](./docs/best-practices/testing.md)
-- `Asset Storage`: [@docs/best-practices/asset-storage.md](./docs/best-practices/asset-storage.md)
-- `Logging`: [@docs/best-practices/logging.md](./docs/best-practices/logging.md)
-- `API Documentation`: [@docs/best-practices/api-documentation.md](./docs/best-practices/api-documentation.md)
+- `Database`: [@api/database.md](./api/database.md)
+- `Conventions`: [@api/conventions.md](./api/conventions.md)
+- `Typescript`: [@api/typescript.md](./api/typescript.md)
+- `Validation`: [@api/validation.md](./api/validation.md)
+- `Request Tracing`: [@api/request-tracing.md](./api/request-tracing.md)
+- `Error Handling`: [@api/error-handling.md](./api/error-handling.md)
+- `Testing`: [@api/testing.md](./api/testing.md)
+- `Asset Storage`: [@api/asset-storage.md](./api/asset-storage.md)
+- `Logging`: [@api/logging.md](./api/logging.md)
+- `API Documentation`: [@api/api-documentation.md](./api/api-documentation.md)
