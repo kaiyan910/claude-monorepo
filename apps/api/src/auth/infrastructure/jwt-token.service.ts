@@ -34,8 +34,8 @@ export class JwtTokenService implements TokenService {
 		return this.jwt.signAsync(
 			{ ...payload, type: "access" },
 			{
-				secret: this.config.get<string>("ACCESS_TOKEN_SECRET"),
-				expiresIn: this.requireConfig("ACCESS_TOKEN_TTL") as StringValue,
+				secret: this.config.getOrThrow<string>("ACCESS_TOKEN_SECRET"),
+				expiresIn: this.config.getOrThrow<StringValue>("ACCESS_TOKEN_TTL"),
 			},
 		);
 	}
@@ -44,19 +44,10 @@ export class JwtTokenService implements TokenService {
 		return this.jwt.signAsync(
 			{ ...payload, type: "refresh" },
 			{
-				secret: this.config.get<string>("REFRESH_TOKEN_SECRET"),
-				expiresIn: this.requireConfig("REFRESH_TOKEN_TTL") as StringValue,
+				secret: this.config.getOrThrow<string>("REFRESH_TOKEN_SECRET"),
+				expiresIn: this.config.getOrThrow<StringValue>("REFRESH_TOKEN_TTL"),
 			},
 		);
-	}
-
-	/** Reads a required config value, throwing if absent. */
-	private requireConfig(key: string): string {
-		const value = this.config.get<string>(key);
-		if (!value) {
-			throw new Error(`Missing required config: ${key}`);
-		}
-		return value;
 	}
 
 	async verifyAccess(token: string): Promise<AccessTokenPayload> {
@@ -88,7 +79,7 @@ export class JwtTokenService implements TokenService {
 	): Promise<T> {
 		try {
 			return await this.jwt.verifyAsync<T>(token, {
-				secret: this.config.get<string>(secretKey),
+				secret: this.config.getOrThrow<string>(secretKey),
 			});
 		} catch {
 			throw new InvalidTokenError();

@@ -4,14 +4,21 @@ import { JwtTokenService } from "@/auth/infrastructure/jwt-token.service";
 import { InvalidTokenError } from "@/common/errors/invalid-token.error";
 
 function makeService(): JwtTokenService {
+	const values: Record<string, string> = {
+		ACCESS_TOKEN_SECRET: "access-secret",
+		REFRESH_TOKEN_SECRET: "refresh-secret",
+		ACCESS_TOKEN_TTL: "15m",
+		REFRESH_TOKEN_TTL: "7d",
+	};
 	const config = {
-		get: (key: string) =>
-			({
-				ACCESS_TOKEN_SECRET: "access-secret",
-				REFRESH_TOKEN_SECRET: "refresh-secret",
-				ACCESS_TOKEN_TTL: "15m",
-				REFRESH_TOKEN_TTL: "7d",
-			})[key],
+		get: (key: string) => values[key],
+		getOrThrow: (key: string) => {
+			const v = values[key];
+			if (v === undefined) {
+				throw new Error(`Missing config: ${key}`);
+			}
+			return v;
+		},
 	} as unknown as ConfigService;
 	return new JwtTokenService(new JwtService({}), config);
 }
