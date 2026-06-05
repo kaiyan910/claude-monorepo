@@ -5,8 +5,13 @@
 		"target": "es2023",
 		"lib": ["ES2023", "DOM"],
 		"module": "esnext",
-		"types": ["vite/client"],
+		"types": ["vite/client", "vitest/globals"],
 		"skipLibCheck": true,
+
+		/* Path alias */
+		"paths": {
+			"@/*": ["./src/*"]
+		},
 
 		/* Bundler mode */
 		"moduleResolution": "bundler",
@@ -22,5 +27,5 @@
 		"erasableSyntaxOnly": true,
 		"noFallthroughCasesInSwitch": true
 	},
-	"include": ["src"]
+	"include": ["src", "vitest.setup.ts"]
 }
