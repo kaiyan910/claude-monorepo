@@ -3,6 +3,7 @@
 
 .superpowers
 .claude/settings.local.json
+.claude/CLAUDE.md
 
 build
 out
