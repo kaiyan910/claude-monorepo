@@ -1,0 +1,41 @@
+# Local development services for the claude-monorepo API.
+#
+# Brings up PostgreSQL matching the default connection string in
+# apps/api/.env.example:
+#   postgresql://postgres:postgres@localhost:5432/claude_monorepo?schema=public
+#
+# Usage:
+#   docker compose up -d            # start Postgres in the background
+#   docker compose ps              # check health
+#   docker compose down            # stop (keeps data)
+#   docker compose down -v         # stop and delete the data volume
+#
+# Values can be overridden via a root .env file (POSTGRES_USER, POSTGRES_PASSWORD,
+# POSTGRES_DB, POSTGRES_PORT) without editing this file.
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: claude-monorepo-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-claude_monorepo}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      # Waits until Postgres is genuinely accepting connections before
+      # the service is reported healthy (useful for `depends_on: condition`).
+      test:
+        ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-claude_monorepo}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  pgdata:
+    driver: local
