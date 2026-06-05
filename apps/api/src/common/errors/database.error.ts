@@ -8,7 +8,7 @@ import type { AppException } from "@/common/errors/app.exception";
 export class DatabaseError extends HttpException implements AppException {
 	readonly code = "DATABASE_ERROR";
 
-	constructor(message: string) {
-		super(message, HttpStatus.INTERNAL_SERVER_ERROR);
+	constructor(message: string, cause?: unknown) {
+		super(message, HttpStatus.INTERNAL_SERVER_ERROR, { cause });
 	}
 }
