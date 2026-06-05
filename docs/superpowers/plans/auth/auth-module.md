@@ -2296,7 +2296,7 @@ describe("Auth (e2e)", () => {
     const res = await request(app.getHttpServer())
       .post("/auth/login")
       .send({ username: "root", password: "correct-password" })
-      .expect(201);
+      .expect(200);
     expect(res.body.accessToken).toEqual(expect.any(String));
     expect(res.body.refreshToken).toEqual(expect.any(String));
   });
@@ -2344,7 +2344,7 @@ describe("Auth (e2e)", () => {
     const res = await request(app.getHttpServer())
       .post("/auth/refresh")
       .send({ refreshToken: login.body.refreshToken })
-      .expect(201);
+      .expect(200);
     expect(res.body.accessToken).toEqual(expect.any(String));
     expect(res.body.refreshToken).toEqual(expect.any(String));
   });
