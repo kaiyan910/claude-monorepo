@@ -1,7 +1,7 @@
 # Auth Module — Design
 
 **Date:** 2026-06-05
-**Status:** Approved
+**Status:** Implemented (pending initial Prisma migration + seed run on a Postgres environment)
 **Feature:** `auth`
 **App:** `apps/api`
 
