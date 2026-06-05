@@ -1,0 +1,5 @@
+- **Vitest** + **React Testing Library** for unit/component tests. **Playwright** for E2E.
+- Co-locate tests: `*.test.ts` / `*.test.tsx` beside source files. E2E in `e2e/*.spec.ts`.
+- Use accessible queries (`getByRole`, `getByLabelText`, `getByText`) over `getByTestId`.
+- Arrange → Act → Assert pattern. One behavior per `it()` block.
+- Mock at the boundary (e.g., `msw`), not internal state. Cover both success and error paths.

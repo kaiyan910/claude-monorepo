@@ -1,0 +1,6 @@
+- **TanStack Form** + **Zod** for all forms.
+- Use `withForm` / `useAppForm` to decompose large forms.
+- Field-level validators for single-field rules; form-level validators for cross-field logic.
+- Always define both `onChange` and `onSubmit` validators.
+- Call `form.deleteField()` when removing dynamic fields (prevent ghost fields).
+- Reset field state on visibility transitions.

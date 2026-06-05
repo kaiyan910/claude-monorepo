@@ -1,0 +1,3 @@
+- Derive all API response types from Zod schemas via `z.infer<>`.
+- Always validate API responses at runtime with `Schema.parse(data)`.
+- Never trust raw API responses or manually define response types.

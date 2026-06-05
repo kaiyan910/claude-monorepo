@@ -1,0 +1,3 @@
+- All UI text via **i18next** — no hard-coded strings.
+- Translations in `@/i18n/locales/{lang}/*.json`.
+- Error keys defined as constants in `@/i18n/error-message.ts`, resolved via `t()`.

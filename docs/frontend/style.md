@@ -1,0 +1,3 @@
+- **TailwindCSS only** — no inline `style={}` or `.css` files.
+- **shadcn/ui first** — check `context7` before building custom components.
+- Mobile tables must have `overflow-x-auto` for horizontal scroll.
