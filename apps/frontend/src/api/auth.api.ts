@@ -1,4 +1,3 @@
-import { apiClient } from "@/lib/api-client";
 import {
 	type AuthResponse,
 	authResponseSchema,
@@ -7,6 +6,7 @@ import {
 	type MeResponse,
 	meResponseSchema,
 } from "@/dto/responses/me-response.res";
+import { apiClient } from "@/lib/api-client";
 
 type Credentials = {
 	username: string;
