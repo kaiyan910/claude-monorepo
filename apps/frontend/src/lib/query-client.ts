@@ -14,11 +14,9 @@ export const queryClient = new QueryClient({
 /**
  * Centralized query keys. Custom hooks must reference these instead of
  * hard-coding key arrays inline, so cache invalidation stays consistent.
- *
- * @example
- * tenders: {
- *   all: ["tenders"] as const,
- *   detail: (id: string) => ["tenders", "detail", id] as const,
- * }
  */
-export const queryKeys = {} as const;
+export const queryKeys = {
+	auth: {
+		me: ["auth", "me"] as const,
+	},
+} as const;
