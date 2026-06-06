@@ -2,6 +2,7 @@ import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "@/app.module";
 import { CustomExceptionFilter } from "@/common/filters/custom-exception.filter";
+import { buildCorsOptions } from "@/config/cors";
 import { setupOpenApi } from "@/core/openapi/setup-openapi";
 
 async function bootstrap(): Promise<void> {
@@ -14,6 +15,7 @@ async function bootstrap(): Promise<void> {
 		}),
 	);
 	app.useGlobalFilters(new CustomExceptionFilter());
+	app.enableCors(buildCorsOptions(process.env));
 	await setupOpenApi(app);
 	await app.listen(process.env.PORT ?? 3000);
 }
