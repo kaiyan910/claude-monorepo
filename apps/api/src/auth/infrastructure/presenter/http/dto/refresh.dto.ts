@@ -5,7 +5,8 @@ import { IsNotEmpty, IsString } from "class-validator";
 export class RefreshDto {
 	@ApiProperty({
 		description: "A valid refresh token previously issued by login or refresh.",
-		example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1MSJ9.sig",
+		example:
+			"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1MSIsInR5cGUiOiJyZWZyZXNoIn0.sig",
 	})
 	@IsString()
 	@IsNotEmpty()

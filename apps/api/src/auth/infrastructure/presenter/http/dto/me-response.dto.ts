@@ -6,10 +6,10 @@ export class MeResponseDto implements UserProfile {
 	@ApiProperty({ example: "550e8400-e29b-41d4-a716-446655440000" })
 	id!: string;
 
-	@ApiProperty({ example: "Root" })
+	@ApiProperty({ description: "Display name.", example: "Root" })
 	name!: string;
 
-	@ApiProperty({ example: "root" })
+	@ApiProperty({ description: "Unique login handle.", example: "root" })
 	username!: string;
 
 	@ApiProperty({ example: "root@example.com" })
@@ -27,6 +27,7 @@ export class MeResponseDto implements UserProfile {
 	@ApiProperty({
 		type: String,
 		format: "date-time",
+		description: "ISO-8601 timestamp of account creation.",
 		example: "2026-06-05T00:00:00.000Z",
 	})
 	createdAt!: Date;
@@ -34,6 +35,7 @@ export class MeResponseDto implements UserProfile {
 	@ApiProperty({
 		type: String,
 		format: "date-time",
+		description: "ISO-8601 timestamp of the last account update.",
 		example: "2026-06-05T00:00:00.000Z",
 	})
 	updatedAt!: Date;
