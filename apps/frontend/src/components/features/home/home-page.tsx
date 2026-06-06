@@ -21,7 +21,7 @@ export function HomePage() {
 
 	return (
 		<main className="mx-auto flex min-h-dvh max-w-2xl flex-col items-center justify-center gap-6 p-8 text-center">
-			<h1 className="font-bold text-4xl tracking-tight">claude-monorepo</h1>
+			<h1 className="font-bold text-4xl tracking-tight">{t("home.appName")}</h1>
 			<p className="text-muted-foreground">
 				{isLoading
 					? t("home.loading")

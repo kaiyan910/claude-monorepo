@@ -88,6 +88,18 @@ describe("LoginForm", () => {
 		).toBeDisabled();
 	});
 
+	it("focuses the first invalid field on submit with errors", async () => {
+		setLoginState({});
+		const user = userEvent.setup();
+		render(<LoginForm />);
+
+		await user.click(screen.getByRole("button", { name: "login.submit" }));
+
+		await waitFor(() =>
+			expect(screen.getByLabelText("login.usernameLabel")).toHaveFocus(),
+		);
+	});
+
 	it("renders a mapped server error", () => {
 		setLoginState({
 			isError: true,

@@ -37,6 +37,12 @@ export function LoginForm() {
 		onSubmit: ({ value }) => {
 			mutate(value);
 		},
+		onSubmitInvalid: () => {
+			const firstInvalid = document.querySelector<HTMLElement>(
+				'[aria-invalid="true"]',
+			);
+			firstInvalid?.focus();
+		},
 	});
 
 	return (
