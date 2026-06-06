@@ -96,3 +96,23 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
+## API Documentation
+
+OpenAPI docs are generated from the controllers/DTOs and served **in
+non-production only** (`NODE_ENV !== "production"`):
+
+- **`GET /reference`** — interactive Scalar API reference UI.
+- **`GET /openapi.json`** — the raw OpenAPI 3 spec (for external tooling).
+
+To document a new feature, follow the `auth` example:
+
+1. Decorate the controller class with `@ApiTags("<feature>")`.
+2. On each handler add `@ApiOperation({ summary })`, an `@ApiOkResponse({ type })`
+   (or other success decorator), and `@ApiErrorResponses(...)` listing every
+   applicable error `code`. Add `@ApiBearerAuth()` to guarded routes.
+3. Make response bodies `@ApiProperty`-decorated classes (not `type` aliases) so
+   Swagger can introspect them; add `@ApiProperty({ example })` to request DTOs.
+
+`@ApiErrorResponses` (in `src/common/openapi/`) groups codes by HTTP status, so
+several codes under one status render as named examples.

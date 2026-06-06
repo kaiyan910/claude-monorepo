@@ -1,7 +1,7 @@
 # API Documentation Setup — Design
 
 **Date:** 2026-06-05
-**Status:** Approved (pending implementation)
+**Status:** Implemented
 **Feature:** `api-documentation`
 **App:** `apps/api`
 
