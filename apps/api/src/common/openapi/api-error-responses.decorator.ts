@@ -19,7 +19,9 @@ export interface ApiErrorEntry {
  * examples — OpenAPI keys responses by status, so a second bare 401 would
  * otherwise overwrite the first.
  */
-export function ApiErrorResponses(...entries: ApiErrorEntry[]) {
+export function ApiErrorResponses(
+	...entries: ApiErrorEntry[]
+): MethodDecorator & ClassDecorator {
 	const byStatus = new Map<number, ApiErrorEntry[]>();
 	for (const entry of entries) {
 		const group = byStatus.get(entry.status) ?? [];
@@ -36,7 +38,7 @@ export function ApiErrorResponses(...entries: ApiErrorEntry[]) {
 					value: {
 						httpCode: status,
 						code: entry.code,
-						message: entry.description ?? entry.code,
+						message: entry.description ?? "See error code for details.",
 						traceId: "87b9a4c3-6eaa-4553-aaee-5809729a13c3",
 						createdAt: "2026-06-05T00:00:00.000Z",
 					},

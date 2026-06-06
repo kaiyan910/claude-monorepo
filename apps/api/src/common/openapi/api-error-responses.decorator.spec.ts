@@ -17,17 +17,18 @@ class ThingsTestController {
 }
 
 describe("ApiErrorResponses", () => {
-	it("groups codes that share a status into one response with named examples", async () => {
+	let document: ReturnType<typeof SwaggerModule.createDocument>;
+
+	beforeAll(async () => {
 		const moduleRef = await Test.createTestingModule({
 			controllers: [ThingsTestController],
 		}).compile();
 		const app = moduleRef.createNestApplication();
+		document = SwaggerModule.createDocument(app, new DocumentBuilder().build());
+		await app.close();
+	});
 
-		const document = SwaggerModule.createDocument(
-			app,
-			new DocumentBuilder().build(),
-		);
-
+	it("groups codes that share a status into one response with named examples", () => {
 		const operation = document.paths["/things"].get as {
 			responses: Record<
 				string,
@@ -40,9 +41,16 @@ describe("ApiErrorResponses", () => {
 			"AUTH_UNAUTHORIZED",
 			"AUTH_INVALID_TOKEN",
 		]);
-		expect(operation.responses["404"]).toBeDefined();
-		expect(document.components?.schemas?.ErrorResponseDto).toBeDefined();
+	});
 
-		await app.close();
+	it("documents a single-code status as its own response", () => {
+		const operation = document.paths["/things"].get as {
+			responses: Record<string, unknown>;
+		};
+		expect(operation.responses["404"]).toBeDefined();
+	});
+
+	it("registers ErrorResponseDto in the document schemas", () => {
+		expect(document.components?.schemas?.ErrorResponseDto).toBeDefined();
 	});
 });
