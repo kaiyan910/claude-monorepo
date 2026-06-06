@@ -34,10 +34,26 @@ const fakeDatabaseService = {
 	onModuleDestroy: async () => {},
 };
 
+/** Minimal shape of the generated document that these tests inspect. */
+interface OpenApiResponse {
+	content?: Record<string, { examples?: Record<string, unknown> }>;
+}
+interface OpenApiOperation {
+	responses: Record<string, OpenApiResponse>;
+}
+interface OpenApiDocument {
+	paths: Record<string, Record<string, OpenApiOperation>>;
+	components: { securitySchemes?: Record<string, unknown> };
+}
+
 describe("OpenAPI docs (e2e)", () => {
 	let app: INestApplication;
+	let document: OpenApiDocument;
+	let originalNodeEnv: string | undefined;
 
 	beforeAll(async () => {
+		originalNodeEnv = process.env.NODE_ENV;
+		// Non-production so setupOpenApi registers the docs routes (no-op in prod).
 		process.env.NODE_ENV = "test";
 		process.env.ACCESS_TOKEN_SECRET = "e2e-access-secret";
 		process.env.REFRESH_TOKEN_SECRET = "e2e-refresh-secret";
@@ -60,55 +76,52 @@ describe("OpenAPI docs (e2e)", () => {
 		app.useGlobalFilters(new CustomExceptionFilter());
 		await setupOpenApi(app);
 		await app.init();
+
+		// The document is invariant for the whole suite — fetch it once.
+		const res = await request(app.getHttpServer())
+			.get("/openapi.json")
+			.expect(200);
+		document = res.body;
 	});
 
 	afterAll(async () => {
+		process.env.NODE_ENV = originalNodeEnv;
 		await app.close();
 	});
 
-	it("GET /openapi.json documents the auth endpoints", async () => {
-		const res = await request(app.getHttpServer())
-			.get("/openapi.json")
-			.expect(200);
-		expect(res.body.paths).toHaveProperty("/auth/login");
-		expect(res.body.paths).toHaveProperty("/auth/refresh");
-		expect(res.body.paths).toHaveProperty("/auth/me");
+	it("documents the auth endpoints", () => {
+		expect(document.paths).toHaveProperty("/auth/login");
+		expect(document.paths).toHaveProperty("/auth/refresh");
+		expect(document.paths).toHaveProperty("/auth/me");
 	});
 
-	it("GET /openapi.json defines the bearer security scheme", async () => {
-		const res = await request(app.getHttpServer())
-			.get("/openapi.json")
-			.expect(200);
-		expect(res.body.components.securitySchemes).toHaveProperty("bearer");
+	it("defines the bearer security scheme", () => {
+		expect(document.components.securitySchemes).toHaveProperty("bearer");
 	});
 
-	it("documents the login error codes with named examples", async () => {
-		const res = await request(app.getHttpServer())
-			.get("/openapi.json")
-			.expect(200);
-		const login = res.body.paths["/auth/login"].post;
+	it("documents the login error codes with named examples", () => {
+		const login = document.paths["/auth/login"].post;
 		expect(login.responses).toHaveProperty("400");
 		expect(login.responses).toHaveProperty("401");
 		expect(login.responses).toHaveProperty("403");
-		expect(
-			login.responses["401"].content["application/json"].examples,
-		).toHaveProperty("AUTH_INVALID_CREDENTIALS");
+		const examples =
+			login.responses["401"].content?.["application/json"]?.examples;
+		expect(examples).toBeDefined();
+		expect(examples).toHaveProperty("AUTH_INVALID_CREDENTIALS");
 	});
 
-	it("documents both 401 codes for GET /auth/me under one response", async () => {
-		const res = await request(app.getHttpServer())
-			.get("/openapi.json")
-			.expect(200);
+	it("groups both 401 codes for GET /auth/me under one response", () => {
 		const examples =
-			res.body.paths["/auth/me"].get.responses["401"].content[
+			document.paths["/auth/me"].get.responses["401"].content?.[
 				"application/json"
-			].examples;
-		expect(Object.keys(examples)).toEqual(
+			]?.examples;
+		expect(examples).toBeDefined();
+		expect(Object.keys(examples ?? {})).toEqual(
 			expect.arrayContaining(["AUTH_UNAUTHORIZED", "AUTH_INVALID_TOKEN"]),
 		);
 	});
 
-	it("GET /reference is mounted and returns HTML", async () => {
+	it("mounts GET /reference and responds with HTML", async () => {
 		const res = await request(app.getHttpServer())
 			.get("/reference")
 			.expect(200);
