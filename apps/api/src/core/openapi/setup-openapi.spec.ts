@@ -1,7 +1,9 @@
 import type { INestApplication } from "@nestjs/common";
 
-// @scalar/nestjs-api-reference is an ESM-only package (no CJS build); mock it
-// so the Jest / ts-jest CommonJS runtime can load the module under test.
+// @scalar/nestjs-api-reference pulls in an ESM-only transitive dep
+// (@scalar/client-side-rendering, "type": "module") that ts-jest's CommonJS
+// runtime cannot load. Mock it at the boundary so the module under test
+// imports cleanly; the production no-op path asserted here never calls it.
 jest.mock("@scalar/nestjs-api-reference", () => ({
 	apiReference: jest.fn(
 		() => (_req: unknown, _res: unknown, next: () => void) => next(),
